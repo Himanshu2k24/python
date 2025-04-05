@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - Campus Bites{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2><i class="fas fa-user-circle me-2"></i>My Profile</h2>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Account Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-user-circle fa-5x text-muted"></i>
+                    <h4 class="mt-3">{{ current_user.username }}</h4>
+                    <p class="text-muted">{{ current_user.email }}</p>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-primary">
+                        <i class="fas fa-edit me-2"></i>Edit Profile
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary">
+                        <i class="fas fa-key me-2"></i>Change Password
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Quick Links</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="{{ url_for('index') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-utensils me-2"></i>Browse Food
+                </a>
+                <a href="{{ url_for('view_cart') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-shopping-cart me-2"></i>My Cart
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <i class="fas fa-heart me-2"></i>Favorite Items
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <i class="fas fa-map-marker-alt me-2"></i>Saved Locations
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Order History</h5>
+                {% if orders %}
+                <span class="badge bg-primary rounded-pill">{{ orders|length }}</span>
+                {% endif %}
+            </div>
+            
+            {% if orders %}
+            <div class="list-group list-group-flush">
+                {% for order in orders %}
+                <div class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex flex-column">
+                                <h6 class="mb-1">Order #{{ order.order_number }}</h6>
+                                <small class="text-muted">{{ order.order_date.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                                <span class="badge bg-{% if order.status == 'completed' %}success{% elif order.status == 'pending' %}warning{% else %}primary{% endif %} mt-2 mb-2" style="width: fit-content;">
+                                    {{ order.status|capitalize }}
+                                </span>
+                                <small class="text-muted">{{ order.items|length }} item(s) • ${{ "%.2f"|format(order.total_amount) }}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="{{ url_for('view_order', order_id=order.id) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="card-body text-center p-5">
+                <i class="fas fa-shopping-bag fa-4x text-muted mb-3"></i>
+                <h5>No Orders Yet</h5>
+                <p class="text-muted">You haven't placed any orders yet.</p>
+                <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">Start Shopping</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}Campus Bites - Quick Food Delivery for Students{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="p-5 text-center bg-image rounded-3" style="
+            background-image: url('https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
+            height: 400px; background-size: cover; background-position: center;">
+            <div class="mask" style="background-color: rgba(0, 0, 0, 0.6);">
+                <div class="d-flex justify-content-center align-items-center h-100">
+                    <div class="text-white">
+                        <h1 class="mb-3">Campus Bites</h1>
+                        <h4 class="mb-4">Quick food delivery for busy students</h4>
+                        <p class="mb-4">No more waiting in long lines or missing meals between classes. <br>Get food delivered to your classroom or schedule pickups from the canteen.</p>
+                        {% if not current_user.is_authenticated %}
+                            <a class="btn btn-outline-light btn-lg" href="{{ url_for('register') }}" role="button">Get Started</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Snacks Section -->
+<section class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="fas fa-cookie-bite me-2"></i>Quick Snacks</h2>
+        <a href="#" class="btn btn-outline-primary btn-sm">View All</a>
+    </div>
+    
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        {% for item in snack_items %}
+        <div class="col">
+            <div class="card h-100">
+                {% if item.image_url %}
+                <img src="{{ item.image_url }}" class="card-img-top" alt="{{ item.name }}" style="height: 180px; object-fit: cover;">
+                {% else %}
+                <img src="{{ url_for('static', filename='images/snack-placeholder.jpg') }}" class="card-img-top" alt="{{ item.name }}" style="height: 180px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                    <p class="card-text small text-muted">{{ item.description|truncate(80) }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fs-5 fw-bold text-primary">${{ "%.2f"|format(item.price) }}</span>
+                        {% if current_user.is_authenticated %}
+                        <form action="{{ url_for('add_to_cart', product_id=item.id) }}" method="post">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fas fa-cart-plus me-1"></i> Add
+                            </button>
+                        </form>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-cart-plus me-1"></i> Add
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> No snacks available at the moment. Check back soon!
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Food Section -->
+<section class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="fas fa-utensils me-2"></i>Campus Food</h2>
+        <a href="#" class="btn btn-outline-primary btn-sm">View All</a>
+    </div>
+    
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        {% for item in food_items %}
+        <div class="col">
+            <div class="card h-100">
+                {% if item.image_url %}
+                <img src="{{ item.image_url }}" class="card-img-top" alt="{{ item.name }}" style="height: 180px; object-fit: cover;">
+                {% else %}
+                <img src="{{ url_for('static', filename='images/food-placeholder.jpg') }}" class="card-img-top" alt="{{ item.name }}" style="height: 180px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                    <p class="card-text small text-muted">{{ item.description|truncate(80) }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fs-5 fw-bold text-primary">${{ "%.2f"|format(item.price) }}</span>
+                        {% if current_user.is_authenticated %}
+                        <form action="{{ url_for('add_to_cart', product_id=item.id) }}" method="post">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fas fa-cart-plus me-1"></i> Add
+                            </button>
+                        </form>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-cart-plus me-1"></i> Add
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> No food items available at the moment. Check back soon!
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="mb-5 p-4 bg-light rounded">
+    <h2 class="text-center mb-4">How It Works</h2>
+    <div class="row g-4">
+        <div class="col-md-4 text-center">
+            <div class="p-3">
+                <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                <h4>Choose Your Food</h4>
+                <p>Browse through our menu of quick snacks and meals prepared fresh daily.</p>
+            </div>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="p-3">
+                <i class="fas fa-credit-card fa-3x text-primary mb-3"></i>
+                <h4>Place Your Order</h4>
+                <p>Select items, add to cart, and complete your purchase securely.</p>
+            </div>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="p-3">
+                <i class="fas fa-hand-holding fa-3x text-primary mb-3"></i>
+                <h4>Get It Delivered</h4>
+                <p>Receive your food directly at your classroom or pick it up when ready.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

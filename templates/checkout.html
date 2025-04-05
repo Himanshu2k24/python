@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - Campus Bites{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2><i class="fas fa-credit-card me-2"></i>Checkout</h2>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Delivery Information</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('place_order') }}" method="post" id="checkout-form">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="building" class="form-label">Building/Block</label>
+                            <select class="form-select" id="building" name="building" required>
+                                <option value="">Select Building</option>
+                                <option value="Academic Block A">Academic Block A</option>
+                                <option value="Academic Block B">Academic Block B</option>
+                                <option value="Academic Block C">Academic Block C</option>
+                                <option value="Library">Library</option>
+                                <option value="Student Center">Student Center</option>
+                                <option value="Hostel Block">Hostel Block</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="room" class="form-label">Room/Classroom Number</label>
+                            <input type="text" class="form-control" id="room" name="room" placeholder="e.g. 101, Lab 3" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Delivery Instructions (Optional)</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Any special instructions for delivery"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="delivery_option" class="form-label">Delivery Option</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="delivery_option" id="deliver" value="deliver" checked>
+                            <label class="form-check-label" for="deliver">
+                                Deliver to my location
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="delivery_option" id="pickup" value="pickup">
+                            <label class="form-check-label" for="pickup">
+                                I'll pick it up when ready
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h5 class="mb-3">Payment Method</h5>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="cash" value="cash" checked>
+                            <label class="form-check-label" for="cash">
+                                <i class="fas fa-money-bill-wave me-2"></i> Cash on Delivery
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="online" value="online">
+                            <label class="form-check-label" for="online">
+                                <i class="fas fa-credit-card me-2"></i> Online Payment
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="wallet" value="wallet">
+                            <label class="form-check-label" for="wallet">
+                                <i class="fas fa-wallet me-2"></i> University Wallet
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="online-payment-section" class="payment-section mt-3" style="display: none;">
+                        <div class="card border">
+                            <div class="card-body">
+                                <h6 class="mb-3">Credit/Debit Card Details</h6>
+                                <div class="mb-3">
+                                    <label for="card_number" class="form-label">Card Number</label>
+                                    <input type="text" class="form-control" id="card_number" placeholder="XXXX XXXX XXXX XXXX">
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="expiry" class="form-label">Expiry Date</label>
+                                        <input type="text" class="form-control" id="expiry" placeholder="MM/YY">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="cvv" class="form-label">CVV</label>
+                                        <input type="text" class="form-control" id="cvv" placeholder="XXX">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="card_name" class="form-label">Name on Card</label>
+                                    <input type="text" class="form-control" id="card_name" placeholder="John Doe">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Order Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold">Items ({{ cart_items|length }})</span>
+                        <a href="{{ url_for('view_cart') }}" class="text-decoration-none small">View cart</a>
+                    </div>
+                    
+                    <div class="order-items-list">
+                        {% for item in cart_items %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <div>
+                                <span>{{ item.quantity }}x {{ item.product.name }}</span>
+                            </div>
+                            <span>${{ "%.2f"|format(item.product.price * item.quantity) }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal:</span>
+                    <span>${{ "%.2f"|format(total) }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Delivery Fee:</span>
+                    <span>$0.00</span>
+                </div>
+                
+                <hr>
+                
+                <div class="d-flex justify-content-between mb-3">
+                    <strong>Total:</strong>
+                    <strong class="text-primary">${{ "%.2f"|format(total) }}</strong>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" form="checkout-form" class="btn btn-primary">
+                        <i class="fas fa-lock me-2"></i>Place Order
+                    </button>
+                    <a href="{{ url_for('view_cart') }}" class="btn btn-outline-secondary">
+                        Return to Cart
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle payment sections based on selected payment method
+        const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
+        const onlinePaymentSection = document.getElementById('online-payment-section');
+        
+        paymentRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'online') {
+                    onlinePaymentSection.style.display = 'block';
+                } else {
+                    onlinePaymentSection.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
